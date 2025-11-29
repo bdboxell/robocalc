@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Robo Calc</title>
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --orange: #ffa621;
+            --pink: #ff21ff;
+            --primary: var(--orange); 
+            --accent: var(--pink);
+            
+            --bg: #121212;
+            --card-bg: #1e1e1e;
+            --input-bg: #2a2a2a;
+            --banner-bg: #181818;
+            --text: #f0f0f0;
+            --border: #444;
+            --unit-text: #888;
+        }
+
+        body {
+            font-family: 'Chakra Petch', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* --- Header --- */
+        header {
+            width: 100%;
+            padding: 25px 0 15px 0;
+            text-align: center;
+            background-color: var(--bg);
+        }
+
+        h1 {
+            color: var(--text);
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            font-size: 2.5rem;
+            margin: 0;
+            font-weight: 700;
+            font-style: italic;
+            text-shadow: 2px 2px 0px var(--primary);
+        }
+        h1 span { color: var(--accent); }
+
+        .subtitle {
+            color: var(--primary);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 5px;
+            font-weight: 600;
+        }
+
+        /* --- Sticky Action Banner --- */
+        .sticky-action-bar {
+            position: sticky;
+            top: 0;
+            width: 100%;
+            background-color: var(--banner-bg);
+            border-bottom: 2px solid var(--primary);
+            padding: 10px 20px;
+            display: flex;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .action-container {
+            width: 100%;
+            max-width: 900px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        /* --- Robot Info Fields --- */
+        .info-container {
+            width: 100%;
+            max-width: 800px;
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .info-row {
+            display: flex;
+            gap: 20px;
+        }
+        @media (max-width: 600px) { .info-row { flex-direction: column; gap: 15px; } }
+
+        .name-input-group {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            position: relative;
+        }
+        .name-input-group label {
+            color: var(--primary);
+            margin-bottom: 5px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        .name-input-group input {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            color: var(--accent);
+            font-weight: bold;
+            padding: 12px 15px;
+            font-size: 1.1rem;
+            border-radius: 4px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .name-input-group input:focus { border-color: var(--primary); outline: none; }
+        
+        .suffix-tag {
+            position: absolute;
+            right: 1px;
+            top: 32px;
+            height: calc(100% - 34px);
+            padding: 0 15px;
+            color: var(--unit-text);
+            display: flex;
+            align-items: center;
+            font-size: 0.9rem;
+            font-weight: 600;
+            pointer-events: none;
+        }
+
+        /* --- Buttons & Inputs --- */
+        .file-group { display: flex; gap: 10px; align-items: center; }
+
+        .file-btn {
+            background: transparent;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: 'Chakra Petch', sans-serif;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            transition: all 0.2s;
+        }
+        .file-btn:hover { background-color: var(--accent); color: #000; }
+
+        .toggle-container {
+            display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 0.8rem;
+            background: #222; padding: 5px 12px; border-radius: 30px; border: 1px solid var(--border);
+        }
+        
+        .switch { position: relative; display: inline-block; width: 40px; height: 20px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #444; transition: .3s; border-radius: 20px;
+        }
+        .slider:before {
+            position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px;
+            background-color: white; transition: .3s; border-radius: 50%;
+        }
+        input:checked + .slider { background-color: var(--primary); }
+        input:checked + .slider:before { transform: translateX(20px); }
+
+        button.calc-btn {
+            padding: 8px 25px; border-radius: 4px; border: none;
+            background-color: var(--primary);
+            color: #000; font-family: 'Chakra Petch', sans-serif; font-size: 1rem;
+            font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
+            cursor: pointer; transition: filter 0.2s;
+            box-shadow: 0 4px 0px #cc7a00;
+        }
+        button.calc-btn:hover { filter: brightness(1.1); transform: translateY(-1px); }
+        button.calc-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 #cc7a00; }
+
+        /* --- Main Content --- */
+        .main-wrapper {
+            width: 100%; max-width: 800px; padding: 20px;
+            display: flex; flex-direction: column; gap: 20px;
+        }
+
+        .add-menu {
+            display: flex; gap: 10px; justify-content: center; margin-bottom: 20px; flex-wrap: wrap;
+            padding: 20px; border: 2px dashed #333; border-radius: 8px;
+        }
+        .add-btn {
+            padding: 10px 20px; background: #333; border: 1px solid #555; color: #ddd;
+            cursor: pointer; font-family: 'Chakra Petch', sans-serif; font-weight: 600; transition: 0.2s;
+        }
+        .add-btn:hover { background: #444; border-color: var(--primary); color: var(--primary); }
+
+        .module-card {
+            background-color: var(--card-bg); border: 1px solid var(--border);
+            border-radius: 8px; overflow: visible; position: relative; animation: fadeIn 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+        .module-card::before {
+            content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+            background: var(--border); border-top-left-radius: 8px; border-bottom-left-radius: 8px;
+        }
+        /* Subsystem Colors */
+        .module-card[data-type="drive"]::before { background: var(--accent); }
+        .module-card[data-type="weapon"]::before { background: var(--primary); }
+        .module-card[data-type="arm"]::before { background: #00d4ff; }
+        .module-card[data-type="flywheel"]::before { background: #88ff00; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .module-header {
+            background: #252525; padding: 15px 20px; border-bottom: 1px solid var(--border);
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .module-title { font-weight: 700; text-transform: uppercase; color: var(--text); letter-spacing: 1px;}
+        .module-card[data-type="drive"] .module-title { color: var(--accent); }
+        .module-card[data-type="weapon"] .module-title { color: var(--primary); }
+        .module-card[data-type="arm"] .module-title { color: #00d4ff; }
+        .module-card[data-type="flywheel"] .module-title { color: #88ff00; }
+        
+        .delete-btn { background: none; border: none; color: #666; font-size: 1.2rem; cursor: pointer; }
+        .delete-btn:hover { color: #ff3e3e; }
+
+        .module-body { padding: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+        @media (max-width: 768px) { .module-body { grid-template-columns: 1fr; } }
+
+        .section-title {
+            color: #888; font-size: 0.8rem; text-transform: uppercase; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 5px;
+        }
+
+        .input-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: 600; font-size: 0.8rem; color: #ccc; }
+        
+        .field-wrapper {
+            display: flex; align-items: center; background-color: var(--input-bg);
+            border: 1px solid var(--border); border-radius: 4px; transition: 0.2s;
+        }
+        .field-wrapper:focus-within { border-color: var(--primary); }
+        .field-wrapper.disabled { opacity: 0.5; pointer-events: none; }
+        
+        input, select {
+            width: 100%; padding: 8px 10px; background: transparent; border: none;
+            color: white; font-family: 'Chakra Petch', sans-serif; font-size: 1rem; outline: none;
+        }
+        select { cursor: pointer; background-color: var(--input-bg); }
+        option { background-color: var(--card-bg); color: white; }
+
+        /* Range Slider for Efficiency */
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+            padding: 5px 0;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 16px; width: 16px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            margin-top: -6px;
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%; height: 4px;
+            background: #444;
+            border-radius: 2px;
+        }
+
+        .unit-tag {
+            padding: 0 10px; 
+            color: var(--unit-text); /* Matches output unit color */
+            font-size: 0.8rem; 
+            font-weight: 600;
+            background-color: transparent; 
+            min-width: 40px; 
+            display: flex; 
+            justify-content: flex-end; 
+            align-items: center;
+            border: none;
+        }
+
+        .checkbox-wrapper { display: flex; align-items: center; gap: 10px; margin-top: 5px; margin-bottom: 15px; }
+        .checkbox-wrapper input { width: auto; cursor: pointer; accent-color: var(--primary); }
+        .checkbox-label { font-size: 0.85rem; color: #ddd; margin: 0; }
+
+        .electronics-panel {
+            grid-column: 1 / -1;
+            background: rgba(255, 166, 33, 0.1);
+            border: 1px solid var(--primary);
+            border-radius: 6px;
+            padding: 15px;
+            margin-top: 10px;
+        }
+
+        .result-row {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 10px; background-color: rgba(255, 255, 255, 0.03);
+            border-radius: 4px; margin-bottom: 10px; border: 1px solid #333;
+        }
+        .result-label { font-size: 0.85rem; color: #aaa; }
+        .result-value { font-size: 1.1rem; color: var(--accent); font-weight: 700; }
+        .module-card[data-type="weapon"] .result-value { color: var(--primary); }
+        .module-card[data-type="flywheel"] .result-value { color: #88ff00; }
+        .module-card[data-type="arm"] .result-value { color: #00d4ff; }
+
+        .tooltip-wrapper { position: relative; display: flex; align-items: center; gap: 6px; cursor: help; }
+        .tooltip-icon {
+            font-size: 0.7rem; color: #555; border: 1px solid #444; border-radius: 50%;
+            width: 14px; height: 14px; display: flex; justify-content: center; align-items: center;
+        }
+        .tooltip-wrapper:hover .tooltip-icon { color: var(--primary); border-color: var(--primary); }
+        .tooltip-wrapper::after {
+            content: attr(data-equation); position: absolute; bottom: 125%; left: 0;
+            background: #222; color: var(--accent); padding: 6px 10px; border-radius: 4px;
+            font-family: monospace; font-size: 0.75rem; white-space: nowrap;
+            border: 1px solid var(--accent); pointer-events: none; opacity: 0; visibility: hidden; z-index: 100;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.8);
+        }
+        .tooltip-wrapper:hover::after { opacity: 1; visibility: visible; }
+
+        .info-text { font-size: 0.75rem; color: var(--accent); margin-top: 4px; font-style: italic; }
+        .file-status-bar { text-align: center; color: #555; font-size: 0.8rem; margin-top: 10px; }
+
+        /* --- Footer --- */
+        .site-footer {
+            margin-top: auto;
+            width: 100%;
+            padding: 30px;
+            text-align: center;
+            border-top: 1px solid #222;
+            color: #666;
+            font-size: 0.8rem;
+            background-color: #151515;
+        }
+        .site-footer a { color: var(--primary); text-decoration: none; transition: 0.2s; }
+        .site-footer a:hover { color: var(--accent); }
+        .site-footer p { margin: 5px 0; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>ROBO <span>CALC</span></h1>
+        <div class="subtitle">Powered by Too Hot Robotics</div>
+    </header>
+
+    <div class="sticky-action-bar">
+        <div class="action-container">
+            <div class="file-group">
+                <input type="file" id="csvFileInput" accept=".csv" style="display: none;" onchange="handleFileImport(this)">
+                <button class="file-btn" onclick="document.getElementById('csvFileInput').click()">Import</button>
+                <button class="file-btn" onclick="exportToCSV()">Export</button>
+            </div>
+
+            <div class="toggle-container">
+                <span id="label-imp" style="color: white;">IMP</span>
+                <label class="switch">
+                    <input type="checkbox" id="unitToggle" onchange="toggleUnits()">
+                    <span class="slider"></span>
+                </label>
+                <span id="label-met" style="color: #777;">MET</span>
+            </div>
+
+            <button class="calc-btn" onclick="calculateAll()">Calculate</button>
+        </div>
+    </div>
+
+    <div class="file-status-bar">
+        File: <span id="display-filename">--</span> | Saved: <span id="display-timestamp">--</span>
+    </div>
+
+    <!-- Robot Info Fields -->
+    <div class="info-container">
+        <div class="name-input-group">
+            <label>Robot Name</label>
+            <input type="text" id="globalRobotName" placeholder="Enter Name">
+        </div>
+        
+        <div class="info-row">
+            <div class="name-input-group" style="flex: 1;">
+                <label>Weight Class</label>
+                <input type="text" id="robotWeight" placeholder="e.g. 3">
+                <div class="suffix-tag" id="weight-unit">lb</div>
+            </div>
+            <div class="name-input-group" style="flex: 2;">
+                <label>Description</label>
+                <input type="text" id="robotDesc" placeholder="e.g. 4WD Vertical Spinner">
+            </div>
+        </div>
+    </div>
+
+    <div class="main-wrapper" id="modules-container"></div>
+
+    <div class="add-menu">
+        <span style="align-self: center; color: #666; font-weight: bold; text-transform: uppercase; margin-right: 10px;">Add Subsystem:</span>
+        <button class="add-btn" onclick="addModule('drive')">+ Drive</button>
+        <button class="add-btn" onclick="addModule('weapon')">+ Weapon</button>
+        <button class="add-btn" onclick="addModule('arm')">+ Arm</button>
+        <button class="add-btn" onclick="addModule('flywheel')">+ Flywheel</button>
+    </div>
+
+    <footer class="site-footer">
+        <p>Combat Robotics Calculator Tool by Brian Boxell</p>
+        <p>Contact: <a href="mailto:bdboxell@gmail.com">bdboxell@gmail.com</a> | @bdboxell on Discord</p>
+        <p>Last Updated: November 27, 2025</p>
+    </footer>
+
+    <script>
+        let isMetric = false;
+        let moduleCount = 0;
+        const container = document.getElementById('modules-container');
+
+        // Data Definitions
+        const MOTOR_PRESETS = [
+            { name: "Custom / Other", kv: null, ratio: null },
+            { name: "THR HotBox Pro", kv: 565, ratio: 5.4 },
+            { name: "Repeat Compact", kv: 2300, ratio: 22 },
+            { name: "Repeat Drive Pro 2006 (4S)", kv: 2500, ratio: 27 },
+            { name: "Repeat Drive Pro 2006 (6S)", kv: 1900, ratio: 27 },
+            { name: "Repeat Drive Pro 2207 (4S)", kv: 2500, ratio: 27 },
+            { name: "Repeat Drive Pro 2207 (6S)", kv: 1900, ratio: 27 },
+            { name: "Repeat Drive Max V2", kv: 2100, ratio: 27 },
+            { name: "Rectified Robotics 22mm", kv: 2300, ratio: 22 },
+            { name: "JCR Blitz Lite (2-6S)", kv: 2850, ratio: 29 },
+            { name: "JCR Blitz Pro", kv: 650, ratio: 5.2 }
+        ];
+
+        const CHEMISTRIES = [
+            { id: 'lipo', name: 'LiPo', v: 4.20 },
+            { id: 'lihv', name: 'LiHV', v: 4.35 },
+            { id: 'lion', name: 'Li-Ion', v: 4.10 },
+            { id: 'nimh', name: 'NiMH', v: 1.50 }
+        ];
+
+        document.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') calculateAll();
+        });
+
+        // --- UNITS ---
+        function getUnit(type) {
+            if(type === 'len') return isMetric ? 'mm' : 'in';
+            if(type === 'moi') return isMetric ? 'kg·m²' : 'lb·in²';
+            if(type === 'spd') return isMetric ? 'm/s' : 'mph';
+            if(type === 'trq') return isMetric ? 'N·m' : 'ft·lb';
+            if(type === 'ang') return isMetric ? 'kg·m²/s' : 'lb·in·s';
+            if(type === 'force') return isMetric ? 'N' : 'lb';
+            if(type === 'rpm') return 'RPM';
+            if(type === 'deg') return 'deg';
+            if(type === 'deg/s') return 'deg/s';
+            if(type === 'rpm/v') return 'RPM/V';
+            if(type === 'watts') return 'Watts';
+            if(type === 'amps') return 'Amps';
+            if(type === 'hz') return 'Hz';
+            if(type === 'volts') return 'Volts';
+            if(type === 'cap') return 'uF';
+            if(type === 'J') return 'J';
+            if(type === 's') return 's';
+            if(type === '%') return '%';
+            return '';
+        }
+
+        // --- TEMPLATES ---
+        function createInput(label, id, unitType, value, step="0.1", extraProps="") {
+            const unit = getUnit(unitType);
+            return `
+            <div class="input-group">
+                <label>${label}</label>
+                <div class="field-wrapper" id="wrap-${id}">
+                    <input type="number" class="mod-input" data-id="${id}" value="${value}" step="${step}" ${extraProps}>
+                    ${unit || (unitType && unitType.length < 10) ? `<span class="unit-tag" data-unit-type="${unitType}">${unit || unitType}</span>` : ''}
+                </div>
+            </div>`;
+        }
+
+        function createOutput(label, id, equation, unitType) {
+            const unit = getUnit(unitType);
+            return `
+            <div class="result-row">
+                <div class="tooltip-wrapper" data-equation="${equation}">
+                    <span class="result-label">${label}</span>
+                    <span class="tooltip-icon">?</span>
+                </div>
+                <div>
+                    <span class="result-value" data-out-id="${id}">--</span>
+                    <span style="color: #888; font-size: 0.8rem; margin-left: 5px; font-weight: 600;" data-unit-type="${unitType}">${unit}</span>
+                </div>
+            </div>`;
+        }
+
+        function createMotorSelect(selectedIdx = 0) {
+            let opts = MOTOR_PRESETS.map((m, i) => `<option value="${i}" ${i == selectedIdx ? 'selected' : ''}>${m.name}</option>`).join('');
+            return `
+            <div class="input-group">
+                <label>Preset Motor</label>
+                <div class="field-wrapper">
+                    <select class="mod-input" data-id="motorSelect" onchange="applyMotorPreset(this)">${opts}</select>
+                </div>
+            </div>`;
+        }
+
+        function createChemSelect(selectedId = 'lipo') {
+            let opts = CHEMISTRIES.map(c => `<option value="${c.id}" ${c.id === selectedId ? 'selected' : ''}>${c.name}</option>`).join('');
+            return `
+            <div class="input-group">
+                <label>Battery Chemistry</label>
+                <div class="field-wrapper">
+                    <select class="mod-input" data-id="chemSelect" onchange="updateChemDisplay(this)">${opts}</select>
+                </div>
+                <div class="info-text" data-id="chemDisplay">-- V/cell</div>
+            </div>`;
+        }
+
+        // --- MODULE GENERATOR ---
+        function addModule(type, data = null) {
+            moduleCount++;
+            const id = `mod-${moduleCount}`;
+            const div = document.createElement('div');
+            div.className = 'module-card';
+            div.id = id;
+            div.dataset.type = type;
+
+            let title = type.toUpperCase();
+            let inputsHTML = '';
+            let outputsHTML = '';
+            
+            const val = (field, defaultVal = "") => {
+                if(data && data[field] !== undefined) return data[field];
+                return defaultVal;
+            };
+
+            // --- DRIVE ---
+            if (type === 'drive') {
+                inputsHTML += createMotorSelect(val('motorSelect', 0));
+                inputsHTML += createInput("Wheel Diameter", "diam", "len", val('diam'));
+                inputsHTML += createInput("Battery Cells (S)", "cells", "", val('cells'), "1");
+                inputsHTML += createChemSelect(val('chemSelect', 'lipo'));
+                inputsHTML += createInput("Motor KV", "kv", "rpm/v", val('kv'), "10");
+                inputsHTML += createInput("Gearbox Ratio", "gearb", "", val('gearb', 1));
+                inputsHTML += createInput("External Ratio", "ext", "", val('ext', 1), "0.1");
+                
+                const isDD = data && data.dd === true; 
+                inputsHTML += `
+                    <div class="checkbox-wrapper">
+                        <input type="checkbox" class="mod-input" data-id="dd" onchange="toggleDirectDrive(this)" ${isDD ? 'checked' : ''}>
+                        <label class="checkbox-label">Direct Drive (No Ext. Reduction)</label>
+                    </div>`;
+
+                outputsHTML += createOutput("Max Speed", "speed", "RPM * Circumference", "spd");
+                outputsHTML += createOutput("Max Wheel RPM", "rpm", "MotorRPM / TotalRatio", "rpm");
+            } 
+            // --- WEAPON ---
+            else if (type === 'weapon') {
+                inputsHTML += createInput("Weapon Diameter", "diam", "len", val('diam'));
+                inputsHTML += createInput("MOI", "moi", "moi", val('moi'), "0.01");
+                inputsHTML += createInput("Gear Ratio", "ratio", "", val('ratio', 1));
+                
+                const isDD = data && data.dd === true;
+                inputsHTML += `
+                    <div class="checkbox-wrapper" style="margin-top: 5px; margin-bottom: 15px;">
+                        <input type="checkbox" class="mod-input" data-id="dd" onchange="toggleDirectDriveWeapon(this)" ${isDD ? 'checked' : ''}>
+                        <label class="checkbox-label">Direct Drive (Ratio = 1)</label>
+                    </div>`;
+
+                inputsHTML += createInput("Motor KV", "kv", "rpm/v", val('kv'));
+                inputsHTML += createInput("Motor Power (W)", "power", "watts", val('power'));
+                inputsHTML += createInput("Battery Cells (S)", "cells", "", val('cells'), "1");
+                inputsHTML += createChemSelect(val('chemSelect', 'lipo'));
+                
+                const effVal = val('eff', 90);
+                inputsHTML += `
+                    <div class="input-group" style="margin-top:15px">
+                        <label>Efficiency: <span id="eff-display-${id}">${effVal}%</span></label>
+                        <input type="range" class="mod-input" data-id="eff" value="${effVal}" min="0" max="100" step="1" oninput="document.getElementById('eff-display-${id}').innerText = this.value + '%'; calculateAll()">
+                    </div>
+                `;
+
+                const onArm = data && data.onArm === true;
+                inputsHTML += `
+                    <div class="checkbox-wrapper">
+                        <input type="checkbox" class="mod-input" data-id="onArm" ${onArm ? 'checked' : ''}>
+                        <label class="checkbox-label">Mounted on Arm (Use Arm Speed for Bite)</label>
+                    </div>`;
+
+                // Advanced Electronics
+                const advElec = data && data.advElec === true;
+                inputsHTML += `
+                    <div class="checkbox-wrapper">
+                        <input type="checkbox" class="mod-input" data-id="advElec" onchange="toggleElectronics(this)" ${advElec ? 'checked' : ''}>
+                        <label class="checkbox-label">Advanced Electronics Calcs</label>
+                    </div>
+                    <div class="electronics-panel" id="elec-panel" style="${advElec ? 'display:block' : 'display:none'}">
+                        ${createInput("PWM Frequency", "pwmFreq", "hz", val('pwmFreq', 20000), "100")}
+                        ${createInput("Target Ripple Voltage", "targetRipple", "volts", val('targetRipple', 0.2), "0.01")}
+                    </div>
+                `;
+
+                outputsHTML += createOutput("No Load Speed", "rpm", "KV * V / Ratio", "rpm");
+                outputsHTML += createOutput("Tip Speed", "speed", "r * ω", "spd");
+                outputsHTML += createOutput("Angular Momentum", "ang", "I * ω", "ang");
+                outputsHTML += createOutput("Kinetic Energy", "ke", "0.5 * I * ω²", "J");
+                outputsHTML += createOutput("Spin-Up Time", "time", "KE / (0.5 * Power)", "s");
+                outputsHTML += createOutput("Theoretical Bite", "bite", "Speed / WeaponFreq", "len");
+                outputsHTML += createOutput("Current Draw", "amps", "Power / V", "amps");
+                outputsHTML += createOutput("Stall Torque", "torque", "derived from Power", "trq");
+
+                // Electronic Outputs
+                outputsHTML += `<div id="elec-outputs" style="${advElec ? 'display:block' : 'display:none'}">`;
+                outputsHTML += createOutput("RMS Ripple Current", "rippleI", "I_load * 0.5", "amps");
+                outputsHTML += createOutput("Min. Capacitance", "reqCap", "(I_load * 0.25) / (f * V_ripple)", "cap");
+                outputsHTML += `</div>`;
+            }
+            // --- ARM ---
+            else if (type === 'arm') {
+                const actType = val('actuatorType', 'motor');
+                inputsHTML += createInput("Arm Length", "len", "len", val('len'));
+                inputsHTML += createInput("Arm MOI", "moi", "moi", val('moi'), "0.01");
+                inputsHTML += `
+                <div class="input-group">
+                    <label>Actuator Type</label>
+                    <div class="field-wrapper">
+                        <select class="mod-input" data-id="actuatorType" onchange="toggleArmInputs(this)">
+                            <option value="motor" ${actType === 'motor' ? 'selected' : ''}>Gearmotor</option>
+                            <option value="servo" ${actType === 'servo' ? 'selected' : ''}>Servo</option>
+                        </select>
+                    </div>
+                </div>`;
+
+                inputsHTML += `<div class="arm-group-motor" style="${actType === 'servo' ? 'display:none' : ''}">`;
+                inputsHTML += createMotorSelect(val('motorSelect', 0));
+                inputsHTML += createInput("Motor KV", "kv", "rpm/v", val('kv'));
+                inputsHTML += createInput("Gear Ratio", "ratio", "", val('ratio', 1));
+                inputsHTML += createInput("Battery Cells (S)", "cells", "", val('cells'), "1");
+                inputsHTML += createChemSelect(val('chemSelect', 'lipo'));
+                inputsHTML += createInput("Stall Current (A)", "amps", "amps", val('amps', 10));
+                
+                inputsHTML += createInput("External Ratio", "ext", "", val('ext', 1), "0.1");
+                const isDD = data && data.dd === true; 
+                inputsHTML += `
+                    <div class="checkbox-wrapper">
+                        <input type="checkbox" class="mod-input" data-id="dd" onchange="toggleDirectDrive(this)" ${isDD ? 'checked' : ''}>
+                        <label class="checkbox-label">Direct Drive (No Ext. Reduction)</label>
+                    </div>`;
+                inputsHTML += `</div>`;
+
+                inputsHTML += `<div class="arm-group-servo" style="${actType === 'motor' ? 'display:none' : ''}">`;
+                const defTrq = isMetric ? 2.1 : 1.5; 
+                const defSpd = 500; 
+                inputsHTML += createInput("Stall Torque", "servo_trq", "trq", val('servo_trq', defTrq));
+                inputsHTML += createInput("Max Speed", "servo_speed_deg", "deg/s", val('servo_speed_deg', defSpd));
+                inputsHTML += `</div>`;
+
+                outputsHTML += createOutput("Torque at Arm", "torque", "Servo Input OR (Kt * Amps * Ratio)", "trq");
+                outputsHTML += createOutput("Max Linear Speed", "speed", "RPM * Length * 2π", "spd");
+                outputsHTML += createOutput("Max Force at Tip", "force", "Torque / Length", "force");
+                outputsHTML += createOutput("Degrees to Max Speed", "deg", "θ = (I * ω²) / τ_stall", "deg");
+            }
+            // --- FLYWHEEL ---
+            else if (type === 'flywheel') {
+                inputsHTML += createInput("Diameter", "diam", "len", val('diam'));
+                inputsHTML += createInput("MOI", "moi", "moi", val('moi'), "0.01");
+                inputsHTML += createInput("Gear Ratio", "ratio", "", val('ratio', 1));
+                
+                const isDD = data && data.dd === true;
+                inputsHTML += `
+                    <div class="checkbox-wrapper" style="margin-top: 5px; margin-bottom: 15px;">
+                        <input type="checkbox" class="mod-input" data-id="dd" onchange="toggleDirectDriveWeapon(this)" ${isDD ? 'checked' : ''}>
+                        <label class="checkbox-label">Direct Drive (Ratio = 1)</label>
+                    </div>`;
+
+                inputsHTML += createInput("Motor KV", "kv", "rpm/v", val('kv'));
+                inputsHTML += createInput("Battery Cells (S)", "cells", "", val('cells'), "1");
+                inputsHTML += createChemSelect(val('chemSelect', 'lipo'));
+
+                outputsHTML += createOutput("Output RPM", "rpm", "KV * V / Ratio", "rpm");
+                outputsHTML += createOutput("Tip Speed", "speed", "r * ω", "spd");
+                outputsHTML += createOutput("Angular Momentum", "ang", "I * ω", "ang");
+                outputsHTML += createOutput("% Cancellation", "cancel", "Flywheel_L / Weapon_L", "%");
+            }
+
+            div.innerHTML = `
+                <div class="module-header">
+                    <span class="module-title">${title} SUBSYSTEM</span>
+                    <button class="delete-btn" onclick="removeModule('${id}')">✕</button>
+                </div>
+                <div class="module-body">
+                    <div>
+                        <div class="section-title">Inputs</div>
+                        ${inputsHTML}
+                    </div>
+                    <div>
+                        <div class="section-title">Outputs</div>
+                        ${outputsHTML}
+                    </div>
+                </div>
+            `;
+
+            container.appendChild(div);
+            
+            // Initialization
+            const chemSel = div.querySelector('select[data-id="chemSelect"]');
+            if(chemSel) updateChemDisplay(chemSel);
+
+            // Handle DD toggles visually
+            if(type === 'drive' || type === 'arm') {
+                const ddBox = div.querySelector('input[data-id="dd"]');
+                if(ddBox) toggleDirectDrive(ddBox); 
+            }
+            if(type === 'weapon' || type === 'flywheel') {
+                const ddBox = div.querySelector('input[data-id="dd"]');
+                if(ddBox) toggleDirectDriveWeapon(ddBox);
+            }
+            updateModuleLabels(div); 
+        }
+
+        function removeModule(id) { document.getElementById(id).remove(); }
+
+        // --- HANDLERS ---
+        function toggleArmInputs(selectEl) {
+            const mod = selectEl.closest('.module-card');
+            const type = selectEl.value;
+            mod.querySelector('.arm-group-motor').style.display = type === 'servo' ? 'none' : 'block';
+            mod.querySelector('.arm-group-servo').style.display = type === 'servo' ? 'block' : 'none';
+            calculateAll();
+        }
+
+        function applyMotorPreset(selectEl) {
+            const mod = selectEl.closest('.module-card');
+            const idx = selectEl.value;
+            const motor = MOTOR_PRESETS[idx];
+            if(motor.kv !== null) {
+                const kvIn = mod.querySelector('input[data-id="kv"]');
+                const gearIn = mod.querySelector('input[data-id="gearb"]') || mod.querySelector('input[data-id="ratio"]');
+                if(kvIn) kvIn.value = motor.kv;
+                if(gearIn) gearIn.value = motor.ratio;
+            }
+            calculateAll();
+        }
+
+        function updateChemDisplay(selectEl) {
+            const mod = selectEl.closest('.module-card');
+            const chemId = selectEl.value;
+            const chem = CHEMISTRIES.find(c => c.id === chemId);
+            const displayEl = mod.querySelector('[data-id="chemDisplay"]');
+            if(chem && displayEl) displayEl.innerText = `Max/Peak: ${chem.v} V/cell`;
+            calculateAll();
+        }
+
+        // For Drive/Arm (External Ratio)
+        function toggleDirectDrive(checkbox) {
+            const mod = checkbox.closest('.module-card');
+            const extInput = mod.querySelector('input[data-id="ext"]');
+            const wrap = mod.querySelector('#wrap-ext');
+            if(extInput && wrap) {
+                if (checkbox.checked) {
+                    extInput.value = 1;
+                    extInput.disabled = true;
+                    wrap.classList.add('disabled');
+                } else {
+                    extInput.disabled = false;
+                    wrap.classList.remove('disabled');
+                }
+            }
+            calculateAll();
+        }
+
+        // For Weapon/Flywheel (Main Ratio)
+        function toggleDirectDriveWeapon(checkbox) {
+            const mod = checkbox.closest('.module-card');
+            const ratioInput = mod.querySelector('input[data-id="ratio"]');
+            const wrap = mod.querySelector('#wrap-ratio');
+            if(ratioInput && wrap) {
+                if (checkbox.checked) {
+                    ratioInput.value = 1;
+                    ratioInput.disabled = true;
+                    wrap.classList.add('disabled');
+                } else {
+                    ratioInput.disabled = false;
+                    wrap.classList.remove('disabled');
+                }
+            }
+            calculateAll();
+        }
+
+        function toggleElectronics(checkbox) {
+            const mod = checkbox.closest('.module-card');
+            const panel = mod.querySelector('#elec-panel');
+            const outputs = mod.querySelector('#elec-outputs');
+            if(checkbox.checked) {
+                panel.style.display = 'block';
+                outputs.style.display = 'block';
+            } else {
+                panel.style.display = 'none';
+                outputs.style.display = 'none';
+            }
+            calculateAll();
+        }
+
+        // --- CALCULATION LOGIC ---
+
+        function calculateAll() {
+            let maxDriveSpeedMps = 0;
+            let maxArmSpeedMps = 0;
+            let totalWeaponAngMom = 0;
+
+            const modules = document.querySelectorAll('.module-card');
+            const getVal = (mod, name) => { const el = mod.querySelector(`input[data-id="${name}"]`); return el ? (parseFloat(el.value) || 0) : 0; };
+            const getStr = (mod, name) => { const el = mod.querySelector(`select[data-id="${name}"]`); return el ? el.value : null; };
+            const setOut = (mod, name, val) => { const el = mod.querySelector(`[data-out-id="${name}"]`); if(el) el.innerText = val; };
+
+            // PASS 1: Speeds
+            modules.forEach(mod => {
+                const type = mod.dataset.type;
+                if (type === 'drive') {
+                    let diam = getVal(mod, 'diam');
+                    let diamM = isMetric ? diam/1000 : diam * 0.0254;
+                    const cells = getVal(mod, 'cells');
+                    const kv = getVal(mod, 'kv');
+                    const gearb = getVal(mod, 'gearb') || 1;
+                    const ext = getVal(mod, 'ext') || 1;
+                    const chemId = getStr(mod, 'chemSelect');
+                    const chem = CHEMISTRIES.find(c => c.id === chemId) || CHEMISTRIES[0];
+                    const volts = cells * chem.v;
+                    const wheelRpm = (kv * volts) / (gearb * ext);
+                    const speedMps = (diamM / 2) * (wheelRpm * 0.10472);
+
+                    if(speedMps > maxDriveSpeedMps) maxDriveSpeedMps = speedMps;
+
+                    setOut(mod, 'rpm', Math.round(wheelRpm).toLocaleString());
+                    setOut(mod, 'speed', isMetric ? speedMps.toFixed(1) : (speedMps * 2.23694).toFixed(1));
+                }
+                else if (type === 'arm') {
+                    const actType = getStr(mod, 'actuatorType');
+                    let len = getVal(mod, 'len');
+                    let moi = getVal(mod, 'moi');
+                    let lenM = isMetric ? len/1000 : len * 0.0254;
+                    let moiK = isMetric ? moi : moi * 0.00029264;
+
+                    let rpm = 0;
+                    let armTorque = 0;
+
+                    if(actType === 'servo') {
+                        let trqInput = getVal(mod, 'servo_trq');
+                        let degsInput = getVal(mod, 'servo_speed_deg'); // deg/s
+                        // Convert deg/s to RPM: RPM = degs/6
+                        rpm = degsInput / 6;
+                        armTorque = isMetric ? trqInput : trqInput * 1.35582;
+                    } else {
+                        const ratio = getVal(mod, 'ratio') || 1;
+                        const ext = getVal(mod, 'ext') || 1;
+                        const totalRatio = ratio * ext;
+                        const cells = getVal(mod, 'cells');
+                        const chemId = getStr(mod, 'chemSelect');
+                        const chem = CHEMISTRIES.find(c => c.id === chemId) || CHEMISTRIES[0];
+                        const volts = cells * chem.v;
+                        const kv = getVal(mod, 'kv');
+                        const amps = getVal(mod, 'amps');
+
+                        rpm = (kv * volts) / totalRatio;
+                        const Kt = 9.55 / (kv || 1); 
+                        armTorque = (Kt * amps) * totalRatio;
+                    }
+
+                    const rads = rpm * 0.10472;
+                    const speedMps = lenM * rads;
+                    const forceN = (lenM > 0) ? armTorque / lenM : 0;
+                    
+                    let deg = 0;
+                    if(armTorque > 0) {
+                        const thetaRad = (moiK * Math.pow(rads, 2)) / armTorque;
+                        deg = thetaRad * (180 / Math.PI);
+                    }
+
+                    if(speedMps > maxArmSpeedMps) maxArmSpeedMps = speedMps;
+
+                    if(isMetric) {
+                        setOut(mod, 'speed', speedMps.toFixed(1));
+                        setOut(mod, 'torque', armTorque.toFixed(2));
+                        setOut(mod, 'force', forceN.toFixed(1));
+                    } else {
+                        setOut(mod, 'speed', (speedMps * 2.23694).toFixed(1));
+                        setOut(mod, 'torque', (armTorque * 0.73756).toFixed(2));
+                        setOut(mod, 'force', (forceN * 0.224809).toFixed(1));
+                    }
+                    setOut(mod, 'deg', deg.toFixed(1));
+                }
+            });
+
+            // PASS 2: Weapon
+            modules.forEach(mod => {
+                if (mod.dataset.type === 'weapon') {
+                    const getCheck = (name) => { const el = mod.querySelector(`input[data-id="${name}"]`); return el ? el.checked : false; };
+                    
+                    let diam = getVal(mod, 'diam');
+                    let moi = getVal(mod, 'moi');
+                    let diamM = isMetric ? diam/1000 : diam * 0.0254;
+                    let moiK = isMetric ? moi : moi * 0.00029264;
+                    const ratio = getVal(mod, 'ratio') || 1;
+                    const kv = getVal(mod, 'kv');
+                    const power = getVal(mod, 'power');
+                    const cells = getVal(mod, 'cells');
+                    const chemId = getStr(mod, 'chemSelect');
+                    const chem = CHEMISTRIES.find(c => c.id === chemId) || CHEMISTRIES[0];
+                    const volts = cells * chem.v;
+                    const onArm = getCheck('onArm');
+                    const eff = getVal(mod, 'eff') / 100.0;
+
+                    const rpm = (kv * volts) / ratio;
+                    const rads = rpm * 0.10472;
+                    const speedMps = (diamM / 2) * rads;
+                    const ke = 0.5 * moiK * (rads * rads);
+                    const angMom = moiK * rads;
+                    totalWeaponAngMom += angMom;
+
+                    const freq = rpm / 60;
+                    let sourceSpeed = onArm ? maxArmSpeedMps : maxDriveSpeedMps;
+                    let biteMM = 0;
+                    let biteDisplay = "--";
+                    
+                    if(sourceSpeed > 0 && freq > 0) {
+                        const advanceMeters = sourceSpeed / freq;
+                        biteMM = advanceMeters * 1000;
+                        if(isMetric) biteDisplay = biteMM.toFixed(1);
+                        else biteDisplay = (biteMM / 25.4).toFixed(3);
+                    } else if (sourceSpeed === 0) {
+                        biteDisplay = onArm ? "No Arm Move" : "No Drive";
+                    }
+
+                    // Mechanical Power for Kinetic calculations
+                    const powerMech = power * eff;
+                    const time = (powerMech > 0) ? ke / (powerMech * 0.5) : 0;
+                    
+                    // Electrical Power for Current calculations
+                    const amps = (volts > 0) ? power / volts : 0;
+                    
+                    // Torque derived from Mechanical Power
+                    const motorRads = (kv * volts) * 0.10472;
+                    let stallTorqueM = (motorRads > 0) ? (4 * powerMech) / motorRads : 0;
+                    let stallTorqueW = stallTorqueM * ratio;
+
+                    setOut(mod, 'rpm', Math.round(rpm).toLocaleString());
+                    setOut(mod, 'ke', ke.toFixed(1));
+                    setOut(mod, 'time', time.toFixed(2));
+                    setOut(mod, 'amps', amps.toFixed(1));
+                    
+                    if(isMetric) {
+                        setOut(mod, 'speed', speedMps.toFixed(1));
+                        setOut(mod, 'torque', stallTorqueW.toFixed(2));
+                        setOut(mod, 'ang', angMom.toFixed(2));
+                        setOut(mod, 'bite', biteDisplay);
+                    } else {
+                        setOut(mod, 'speed', (speedMps * 2.23694).toFixed(1));
+                        setOut(mod, 'torque', (stallTorqueW * 0.73756).toFixed(2));
+                        setOut(mod, 'ang', (angMom * 8.8507).toFixed(2));
+                        setOut(mod, 'bite', biteDisplay);
+                    }
+
+                    // Advanced Electronics Calcs
+                    if (getCheck('advElec')) {
+                        const pwm = getVal(mod, 'pwmFreq') || 1;
+                        
+                        // 1. RMS Ripple Current (Worst case) = 0.5 * I_load
+                        const i_rms = amps * 0.5;
+                        
+                        // 2. Ripple Voltage is now a TARGET input
+                        const targetRippleV = getVal(mod, 'targetRipple') || 0.2;
+
+                        // 3. Required Cap = (I_load * 0.25) / (f * TargetRippleV)
+                        let reqC = 0;
+                        if (targetRippleV > 0 && pwm > 0) {
+                            reqC = (amps * 0.25) / (pwm * targetRippleV); // Farads
+                        }
+                        const reqCuF = reqC * 1000000;
+
+                        setOut(mod, 'rippleI', i_rms.toFixed(1));
+                        setOut(mod, 'reqCap', Math.round(reqCuF).toLocaleString());
+                    }
+                }
+            });
+
+            // PASS 3: Flywheel
+            modules.forEach(mod => {
+                if (mod.dataset.type === 'flywheel') {
+                    let moi = getVal(mod, 'moi');
+                    let moiK = isMetric ? moi : moi * 0.00029264;
+                    const ratio = getVal(mod, 'ratio') || 1;
+                    const kv = getVal(mod, 'kv');
+                    const cells = getVal(mod, 'cells');
+                    const chemId = getStr(mod, 'chemSelect');
+                    const chem = CHEMISTRIES.find(c => c.id === chemId) || CHEMISTRIES[0];
+                    const volts = cells * chem.v;
+                    const diam = getVal(mod, 'diam');
+                    const diamM = isMetric ? diam/1000 : diam * 0.0254;
+
+                    const rpm = (kv * volts) / ratio;
+                    const rads = rpm * 0.10472;
+                    const tipSpeed = (diamM / 2) * rads;
+                    const angMom = moiK * rads;
+                    
+                    let cancelPercent = 0;
+                    if(totalWeaponAngMom > 0) {
+                        cancelPercent = (angMom / totalWeaponAngMom) * 100;
+                    }
+
+                    setOut(mod, 'rpm', Math.round(rpm).toLocaleString());
+                    if(isMetric) {
+                        setOut(mod, 'speed', tipSpeed.toFixed(1));
+                        setOut(mod, 'ang', angMom.toFixed(2));
+                    } else {
+                        setOut(mod, 'speed', (tipSpeed * 2.23694).toFixed(1));
+                        setOut(mod, 'ang', (angMom * 8.8507).toFixed(2));
+                    }
+                    setOut(mod, 'cancel', cancelPercent.toFixed(1));
+                }
+            });
+        }
+
+        // --- UNITS & CSV ---
+
+        function toggleUnits() {
+            const toggle = document.getElementById('unitToggle');
+            isMetric = toggle.checked;
+            document.getElementById('label-imp').style.color = isMetric ? '#777' : 'white';
+            document.getElementById('label-met').style.color = isMetric ? 'white' : '#777';
+            document.getElementById('weight-unit').innerText = isMetric ? "kg" : "lb";
+
+            const modules = document.querySelectorAll('.module-card');
+            modules.forEach(mod => {
+                const inputs = mod.querySelectorAll('.mod-input');
+                inputs.forEach(inp => {
+                    const tag = inp.parentElement.querySelector('.unit-tag');
+                    if(tag && inp.type === 'number') {
+                        const type = tag.dataset.unitType;
+                        let val = parseFloat(inp.value) || 0;
+                        if(type === 'len') inp.value = isMetric ? (val * 25.4).toFixed(1) : (val / 25.4).toFixed(2);
+                        else if (type === 'moi') inp.value = isMetric ? (val * 0.00029264).toFixed(5) : (val / 0.00029264).toFixed(2);
+                        else if (type === 'trq') inp.value = isMetric ? (val * 1.35582).toFixed(2) : (val / 1.35582).toFixed(2);
+                        else if (type === 'force') inp.value = isMetric ? (val * 4.44822).toFixed(2) : (val / 4.44822).toFixed(2);
+                    }
+                });
+                updateModuleLabels(mod);
+                const outs = mod.querySelectorAll('.result-value');
+                outs.forEach(o => o.innerText = "--");
+            });
+        }
+
+        function updateModuleLabels(mod) {
+            const tags = mod.querySelectorAll('.unit-tag');
+            tags.forEach(tag => tag.innerText = getUnit(tag.dataset.unitType));
+            const outTags = mod.querySelectorAll('span[data-unit-type]');
+            outTags.forEach(tag => {
+                tag.innerText = getUnit(tag.dataset.unitType);
+            });
+        }
+
+        function exportToCSV() {
+            const modules = document.querySelectorAll('.module-card');
+            const robotName = document.getElementById('globalRobotName').value || "Robot";
+            const weight = document.getElementById('robotWeight').value;
+            const desc = document.getElementById('robotDesc').value;
+            
+            if(modules.length === 0) { alert("No subsystems to export."); return; }
+            const timestamp = new Date().toISOString();
+            
+            const header = ["Timestamp", "RobotName", "Weight", "Desc", "Type", "IsMetric", "Param1", "Param2", "Param3", "Param4", "Param5", "Param6", "Param7", "Param8", "Param9", "Param10", "Param11", "Param12", "Param13", "Param14", "Param15", "Param16", "Param17", "Param18"];
+            let csvContent = "data:text/csv;charset=utf-8," + header.join(",") + "\n";
+
+            modules.forEach(mod => {
+                const type = mod.dataset.type;
+                const getVal = (id) => { const el = mod.querySelector(`input[data-id="${id}"]`); return el ? el.value : ""; };
+                const getSel = (id) => { const el = mod.querySelector(`select[data-id="${id}"]`); return el ? el.value : ""; };
+                const getCheck = (id) => { const el = mod.querySelector(`input[data-id="${id}"]`); return el ? el.checked : false; };
+
+                let p = Array(18).fill("");
+
+                if(type === 'drive') {
+                    p[0] = getVal('diam'); p[2] = getVal('cells'); p[3] = getVal('kv'); 
+                    p[4] = getVal('gearb'); p[5] = getVal('ext'); p[6] = getSel('chemSelect');
+                    p[7] = getCheck('dd'); p[8] = getSel('motorSelect');
+                } else if (type === 'weapon') {
+                    p[0] = getVal('diam'); p[1] = getVal('moi'); p[2] = getVal('cells'); 
+                    p[3] = getVal('kv'); p[4] = getVal('ratio'); p[5] = getVal('power');
+                    p[6] = getSel('chemSelect'); p[9] = getCheck('onArm'); p[7] = getCheck('dd');
+                    p[10] = getCheck('advElec'); p[11] = getVal('pwmFreq'); p[16] = getVal('eff');
+                    p[17] = getVal('targetRipple');
+                } else if (type === 'arm') {
+                    p[0] = getVal('len'); p[1] = getVal('moi');
+                    p[10] = getSel('actuatorType');
+                    if(p[10] === 'servo') {
+                        p[11] = getVal('servo_trq'); p[12] = getVal('servo_speed_deg'); // Storing deg/s
+                    } else {
+                        p[2] = getVal('cells'); p[3] = getVal('kv'); p[4] = getVal('ratio'); 
+                        p[5] = getVal('amps'); p[6] = getSel('chemSelect'); p[8] = getSel('motorSelect');
+                        p[7] = getCheck('dd'); p[13] = getVal('ext');
+                    }
+                } else if (type === 'flywheel') {
+                    p[0] = getVal('diam'); p[1] = getVal('moi'); p[2] = getVal('cells');
+                    p[3] = getVal('kv'); p[4] = getVal('ratio'); p[6] = getSel('chemSelect');
+                    p[7] = getCheck('dd');
+                }
+
+                // Clean text fields
+                const cleanName = robotName.replace(/,/g, "-");
+                const cleanW = weight.replace(/,/g, ".");
+                const cleanD = desc.replace(/,/g, " ");
+
+                const row = [timestamp, cleanName, cleanW, cleanD, type, isMetric, ...p];
+                csvContent += row.join(",") + "\n";
+            });
+
+            const link = document.createElement("a");
+            link.setAttribute("href", encodeURI(csvContent));
+            link.setAttribute("download", `${robotName}_Calc.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function handleFileImport(input) {
+            const file = input.files[0];
+            if (!file) return;
+            document.getElementById('display-filename').innerText = file.name;
+            const reader = new FileReader();
+            reader.onload = function(e) { processCSV(e.target.result); };
+            reader.readAsText(file);
+        }
+
+        function processCSV(text) {
+            const lines = text.split("\n");
+            if(lines.length < 2) return;
+            container.innerHTML = "";
+            moduleCount = 0;
+
+            for(let i=1; i<lines.length; i++) {
+                if(!lines[i].trim()) continue;
+                const cols = lines[i].split(",");
+                if (i===1) {
+                    document.getElementById('globalRobotName').value = cols[1];
+                    document.getElementById('robotWeight').value = cols[2];
+                    document.getElementById('robotDesc').value = cols[3];
+                    const fileMetric = (cols[5] === 'true');
+                    const toggle = document.getElementById('unitToggle');
+                    if(fileMetric !== toggle.checked) toggle.click();
+                    document.getElementById('display-timestamp').innerText = new Date(cols[0]).toLocaleString();
+                }
+
+                const type = cols[4];
+                let data = {};
+                // Param mapping: p0->cols[6], p1->cols[7], etc.
+                const c = (idx) => cols[6 + idx];
+
+                if(type === 'drive') {
+                    data = { diam: c(0), cells: c(2), kv: c(3), gearb: c(4), ext: c(5), chemSelect: c(6), dd: (c(7)==='true'), motorSelect: c(8) };
+                } else if (type === 'weapon') {
+                    data = { diam: c(0), moi: c(1), cells: c(2), kv: c(3), ratio: c(4), power: c(5), chemSelect: c(6), dd: (c(7)==='true'), onArm: (c(9)==='true'), advElec: (c(10)==='true'), pwmFreq: c(11), eff: c(16), targetRipple: c(17) };
+                } else if (type === 'arm') {
+                    data = { 
+                        len: c(0), moi: c(1), actuatorType: c(10),
+                        servo_trq: c(11), servo_speed_deg: c(12),
+                        cells: c(2), kv: c(3), ratio: c(4), amps: c(5), chemSelect: c(6), motorSelect: c(8), dd: (c(7)==='true'), ext: c(13)
+                    };
+                } else if (type === 'flywheel') {
+                    data = { diam: c(0), moi: c(1), cells: c(2), kv: c(3), ratio: c(4), chemSelect: c(6), dd: (c(7)==='true') };
+                }
+                addModule(type, data);
+            }
+            calculateAll();
+        }
+    </script>
+</body>
+</html>
